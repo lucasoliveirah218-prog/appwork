@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Painel CNPJ</title>
+</head>
+<body style="font-family: Arial; padding: 30px;">
+
+  <h1>Painel CNPJ</h1>
+
+  <input id="cnpj" placeholder="Digite o CNPJ">
+  <button onclick="buscar()">Buscar</button>
+
+  <div id="dados"></div>
+
+  <br>
+
+  <input id="telefone" placeholder="Telefone">
+  <input id="metatag" placeholder="MetaTag">
+
+  <br><br>
+
+  <button onclick="salvar()">Criar Site</button>
+
+  <script>
+    let dadosGlobal = {}
+
+    async function buscar() {
+      let cnpj = document.getElementById("cnpj").value
+
+      let res = await fetch(`/api/cnpj?cnpj=${cnpj}`)
+      let data = await res.json()
+
+      dadosGlobal = data
+
+      document.getElementById("dados").innerHTML = `
+        <p><b>${data.razao_social}</b></p>
+        <p>${data.municipio} - ${data.uf}</p>
+      `
+    }
+
+    async function salvar() {
+      let telefone = document.getElementById("telefone").value
+      let metatag = document.getElementById("metatag").value
+      let cnpj = document.getElementById("cnpj").value
+
+      await fetch("/api/salvar", {
+        method: "POST",
+        body: JSON.stringify({
+          cnpj,
+          telefone,
+          metatag,
+          razao_social: dadosGlobal.razao_social
+        })
+      })
+
+      alert("Site criado! Acesse pelo subdomínio.")
+    }
+  </script>
+
+</body>
+</html>
