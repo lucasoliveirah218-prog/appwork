@@ -2,60 +2,109 @@
 <html>
 <head>
   <title>Painel CNPJ</title>
-</head>
-<body style="font-family: Arial; padding: 30px;">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <h1>Painel CNPJ</h1>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f9;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+
+    .dados {
+      background: #f1f1f1;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Gerador de Site CNPJ</h1>
 
   <input id="cnpj" placeholder="Digite o CNPJ">
-  <button onclick="buscar()">Buscar</button>
+  <button onclick="buscar()">Buscar dados</button>
 
-  <div id="dados"></div>
-
-  <br>
+  <div id="dados" class="dados"></div>
 
   <input id="telefone" placeholder="Telefone">
-  <input id="metatag" placeholder="MetaTag">
-
-  <br><br>
+  <input id="metatag" placeholder="Meta Tag (Meta / Google)">
 
   <button onclick="salvar()">Criar Site</button>
 
-  <script>
-    let dadosGlobal = {}
+</div>
 
-    async function buscar() {
-      let cnpj = document.getElementById("cnpj").value
+<script>
+  let dadosGlobal = {}
 
-      let res = await fetch(`/api/cnpj?cnpj=${cnpj}`)
-      let data = await res.json()
+  async function buscar() {
+    let cnpj = document.getElementById("cnpj").value
 
-      dadosGlobal = data
+    let res = await fetch(`/api/cnpj?cnpj=${cnpj}`)
+    let data = await res.json()
 
-      document.getElementById("dados").innerHTML = `
-        <p><b>${data.razao_social}</b></p>
-        <p>${data.municipio} - ${data.uf}</p>
-      `
-    }
+    dadosGlobal = data
 
-    async function salvar() {
-      let telefone = document.getElementById("telefone").value
-      let metatag = document.getElementById("metatag").value
-      let cnpj = document.getElementById("cnpj").value
+    document.getElementById("dados").innerHTML = `
+      <b>${data.razao_social}</b><br>
+      ${data.municipio} - ${data.uf}
+    `
+  }
 
-      await fetch("/api/salvar", {
-        method: "POST",
-        body: JSON.stringify({
-          cnpj,
-          telefone,
-          metatag,
-          razao_social: dadosGlobal.razao_social
-        })
+  async function salvar() {
+    let telefone = document.getElementById("telefone").value
+    let metatag = document.getElementById("metatag").value
+    let cnpj = document.getElementById("cnpj").value
+
+    await fetch("/api/salvar", {
+      method: "POST",
+      body: JSON.stringify({
+        cnpj,
+        telefone,
+        metatag,
+        razao_social: dadosGlobal.razao_social
       })
+    })
 
-      alert("Site criado! Acesse pelo subdomínio.")
-    }
-  </script>
+    alert("Site criado!")
+  }
+</script>
 
 </body>
 </html>
